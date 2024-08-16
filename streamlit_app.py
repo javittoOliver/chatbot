@@ -2,12 +2,12 @@ import os
 import streamlit as st
 import pandas as pd
 from groq import Groq
+import torch
+import whisper
 import json
 import io
 import numpy as np
 import soundfile as sf
-import openai
-
 
 # Configura la página de Streamlit para que use todo el ancho disponible
 st.set_page_config(layout="wide")
@@ -43,10 +43,52 @@ def generate_content(modelo:str, prompt:str, system_message:str="You are a helpf
     return stream
 
 # Función para transcribir audio usando Whisper
+def transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30):
+    # Leer el contenido del archivo de audio
+    audio_bytes = uploaded_audio.read()
+    
+    # Convertir los bytes del audio a un archivo temporal que soundfile pueda leer
+    audio_file = io.BytesIO(audio_bytes)
+    
+    # Leer el archivo de audio usando soundfile para obtener los datos de audio y la frecuencia de muestreo
+    audio_data, sample_rate = sf.read(audio_file)
+    
+    # Convertir a mono si es estéreo
+    if audio_data.ndim > 1:
+        audio_data = np.mean(audio_data, axis=1)
+    
+    # Convertir los datos de audio a float32
+    audio_data = audio_data.astype(np.float32)
+    
+    # Calcular el número de muestras por segmento
+    segment_samples = int(segment_duration * sample_rate)
+    
+    # Verificar si la GPU admite FP16
+    if torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 7:
+        fp16_available = True
+    else:
+        fp16_available = False
+    
+    # Cargar el modelo Whisper
+    model = whisper.load_model("small")
+    
+    transcripcion_completa = ""
 
-def transcribir_audio(uploaded_audio):
-    transcript = openai.Audio.transcribe("whisper-1", audio_file)
-    return transcript
+    # Procesar y transcribir cada segmento del audio
+    for start in range(0, len(audio_data), segment_samples):
+        end = min(start + segment_samples, len(audio_data))
+        segment = audio_data[start:end]
+        
+        # Transcribir el segmento de audio
+        if fp16_available:
+            result = model.transcribe(segment, fp16=True)
+        else:
+            result = model.transcribe(segment, fp16=False)
+        
+        # Concatenar la transcripción del segmento al resultado final
+        transcripcion_completa += result["text"] + " "
+    
+    return transcripcion_completa.strip()
 
 # Título de la aplicación Streamlit
 st.title("Loope x- 🤖")
@@ -94,7 +136,7 @@ if uploaded_audio is not None and not st.session_state["transcripcion_finalizada
     st.write("Transcribiendo el audio...")
     
     # Transcribe el audio
-    transcripcion = transcribir_audio(uploaded_audio)
+    transcripcion = transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30)
     
     # Muestra un mensaje de que la transcripción ha finalizado
     st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")

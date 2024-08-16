@@ -43,7 +43,7 @@ def generate_content(modelo:str, prompt:str, system_message:str="You are a helpf
     return stream
 
 # Función para transcribir audio usando Whisper
-def transcribir_audio_por_segmentos(uploaded_audio):
+def transcribir_audio(uploaded_audio):
     # Leer el contenido del archivo de audio
     audio_bytes = uploaded_audio.read()
     
@@ -122,7 +122,7 @@ if uploaded_audio is not None and not st.session_state["transcripcion_finalizada
     st.write("Transcribiendo el audio...")
     
     # Transcribe el audio
-    transcripcion = transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30)
+    transcripcion = transcribir_audio(uploaded_audio)
     
     # Muestra un mensaje de que la transcripción ha finalizado
     st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")

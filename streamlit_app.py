@@ -60,10 +60,6 @@ def transcribir_audio(uploaded_audio):
     # Convertir los datos de audio a float32
     audio_data = audio_data.astype(np.float32)
     
-    # Calcular el número de muestras por segmento
-    segment_samples = int(segment_duration * sample_rate)
-    
-  
     # Cargar el modelo Whisper
     model = whisper.load_model("small")
     

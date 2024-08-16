@@ -43,34 +43,10 @@ def generate_content(modelo:str, prompt:str, system_message:str="You are a helpf
     return stream
 
 # Función para transcribir audio usando Whisper
-def transcribir_audio(uploaded_audio):
-    # Leer el contenido del archivo de audio
-    audio_bytes = uploaded_audio.read()
-    
-    # Convertir los bytes del audio a un archivo temporal que soundfile pueda leer
-    audio_file = io.BytesIO(audio_bytes)
-    
-    # Leer el archivo de audio usando soundfile para obtener los datos de audio y la frecuencia de muestreo
-    audio_data, sample_rate = sf.read(audio_file)
-    
-    # Convertir a mono si es estéreo
-    if audio_data.ndim > 1:
-        audio_data = np.mean(audio_data, axis=1)
-    
-    # Convertir los datos de audio a float32
-    audio_data = audio_data.astype(np.float32)
-    
-    # Cargar el modelo Whisper
-    model = whisper.load_model("small")
-    
-    transcripcion_completa = ""
 
-    # Transcribir
-    result = model.transcribe(audio_file)     
-       
-    transcripcion_completa = result["text"]
-    
-    return transcripcion_completa.strip()
+def transcribir_audio((uploaded_audio):
+    transcript = openai.Audio.transcribe("whisper-1", audio_file)
+    return transcript
 
 # Título de la aplicación Streamlit
 st.title("Loope x- 🤖")

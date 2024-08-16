@@ -7,4 +7,5 @@ openai-whisper
 ffmpeg-python
 torch
 langchain-groq
-pandasai
+pandasai==2.2.14
+pandas numpy

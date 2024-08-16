@@ -43,7 +43,7 @@ def generate_content(modelo:str, prompt:str, system_message:str="You are a helpf
     return stream
 
 # Función para transcribir audio usando Whisper
-def transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30):
+def transcribir_audio_por_segmentos(uploaded_audio):
     # Leer el contenido del archivo de audio
     audio_bytes = uploaded_audio.read()
     
@@ -63,31 +63,16 @@ def transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30):
     # Calcular el número de muestras por segmento
     segment_samples = int(segment_duration * sample_rate)
     
-
-    # Verificar si la GPU admite FP16
-    if torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 7:
-        fp16_available = True
-    else:
-        fp16_available = False
-    
+  
     # Cargar el modelo Whisper
     model = whisper.load_model("small")
     
     transcripcion_completa = ""
 
-    # Procesar y transcribir cada segmento del audio
-    for start in range(0, len(audio_data), segment_samples):
-        end = min(start + segment_samples, len(audio_data))
-        segment = audio_data[start:end]
-        
-        # Transcribir el segmento de audio
-        if fp16_available:
-            result = model.transcribe(segment, fp16=True)
-        else:
-            result = model.transcribe(segment, fp16=False)
-        
-        # Concatenar la transcripción del segmento al resultado final
-        transcripcion_completa += result["text"] + " "
+    # Transcribir
+    result = model.transcribe(audio_file)     
+       
+    transcripcion_completa = result["text"]
     
     return transcripcion_completa.strip()
 

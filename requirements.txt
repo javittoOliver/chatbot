@@ -2,3 +2,6 @@ streamlit
 openai
 groq
 openpyxl
+whisper
+soundfile
+torch

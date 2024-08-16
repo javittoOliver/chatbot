@@ -12,12 +12,13 @@ import soundfile as sf
 # Configura la página de Streamlit para que use todo el ancho disponible
 st.set_page_config(layout="wide")
 
-# Establece la clave API para acceder a la API de Groq
-os.environ['GROQ_API_KEY'] = "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"
+
+# Establece la clave API para acceder a la API de Groq desde st.secrets
+api_key = st.secrets["general"]["GROQ_API_KEY"]
 
 # Inicializa el cliente de Groq usando la clave API
 client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY"),
+    api_key=api_key,
 )
 
 # Función para obtener respuestas en streaming desde la API

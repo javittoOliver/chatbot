@@ -186,7 +186,7 @@ if uploaded_file is not None:
     df = pd.read_excel(uploaded_file)
     df = df.astype({col: str for col in df.select_dtypes(include=['object']).columns})
     st.write("Contenido del archivo:")
-    st.dataframe(df.had(5))
+    st.dataframe(df.head(5))
 
     for col in df.select_dtypes(include=["datetime64[ns]"]).columns:
         df[col] = df[col].astype(str)

@@ -201,7 +201,7 @@ if uploaded_file is not None:
     lista_diccionario = df.to_dict(orient="records")
     lista_diccionario_texto = json.dumps(lista_diccionario, ensure_ascii=False, indent=2)    
 
-    llm = ChatGroq(model_name=modelo, api_key=os.environ.get("GROQ_API_KEY"))
+    llm = ChatGroq(model_name=modelo, api_key=api_key)
     # Inicializa SmartDataframe
     smart_df = SmartDataframe(dfs, config={'llm': llm})
     

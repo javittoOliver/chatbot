@@ -44,7 +44,7 @@ def generate_content(modelo:str, prompt:str, system_message:str="You are a helpf
 
 # Función para transcribir audio usando Whisper
 
-def transcribir_audio((uploaded_audio):
+def transcribir_audio(uploaded_audio):
     transcript = openai.Audio.transcribe("whisper-1", audio_file)
     return transcript
 

@@ -63,7 +63,15 @@ def transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30):
     # Calcular el número de muestras por segmento
     segment_samples = int(segment_duration * sample_rate)
     
+
+    # Verificar si la GPU admite FP16
+    if torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 7:
+        fp16_available = True
+    else:
+        fp16_available = False
     
+    # Cargar el modelo Whisper
+    model = whisper.load_model("small")
     
     transcripcion_completa = ""
 
@@ -73,8 +81,10 @@ def transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30):
         segment = audio_data[start:end]
         
         # Transcribir el segmento de audio
-        result = openai.Audio.transcribe("whisper-1", segment, verbose=True)
-        st.write(result["text"])
+        if fp16_available:
+            result = model.transcribe(segment, fp16=True)
+        else:
+            result = model.transcribe(segment, fp16=False)
         
         # Concatenar la transcripción del segmento al resultado final
         transcripcion_completa += result["text"] + " "

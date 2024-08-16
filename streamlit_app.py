@@ -28,11 +28,13 @@ def get_streaming_response(response):
 
 # Función para generar contenido a partir de un modelo Groq
 def generate_content(modelo:str, prompt:str, system_message:str="You are a helpful assistant.", max_tokens:int=1024, temperature:int=0.5):
+    # Incluye el historial de chat en los mensajes
+    messages = [{"role": "system", "content": system_message}]
+    messages += st.session_state["chat_history"]
+    messages.append({"role": "user", "content": prompt})
+    
     stream = client.chat.completions.create(
-        messages=[
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": prompt},
-        ],
+        messages=messages,
         model=modelo,
         temperature=temperature,
         max_tokens=max_tokens,

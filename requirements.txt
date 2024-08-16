@@ -6,3 +6,5 @@ soundfile
 openai-whisper
 ffmpeg-python
 torch
+langchain-groq
+pandasai

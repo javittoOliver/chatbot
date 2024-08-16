@@ -5,4 +5,4 @@ openpyxl
 soundfile
 openai-whisper
 ffmpeg-python
-
+torch

@@ -1,7 +1,5 @@
 streamlit
-openai
+openai==0.28
 groq
 openpyxl
-openai-whisper
 soundfile
-torch

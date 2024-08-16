@@ -3,5 +3,7 @@ openai==0.28
 groq
 openpyxl
 soundfile
-whisper==1.0
-ffmpeg-python==0.2.0
+whisper
+openai-whisper
+ffmpeg-python
+git+https://github.com/openai/whisper.git

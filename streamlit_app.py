@@ -15,8 +15,8 @@ st.set_page_config(layout="wide")
 
 
 # Establece la clave API para acceder a la API de Groq desde st.secrets
-#api_key = st.secrets["general"]["GROQ_API_KEY"]
-api_key = "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"
+api_key = st.secrets["general"]["GROQ_API_KEY"]
+
 
 # Inicializa el cliente de Groq usando la clave API
 client = Groq(

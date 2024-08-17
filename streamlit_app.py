@@ -1,12 +1,14 @@
 import os
+import numpy as np
 import streamlit as st
 import pandas as pd
 from groq import Groq
 import torch
 import whisper
+from pandasai import SmartDataframe
+from langchain_groq.chat_models import ChatGroq
 import json
 import io
-import numpy as np
 import soundfile as sf
 
 # Configura la página de Streamlit para que use todo el ancho disponible
@@ -94,7 +96,7 @@ def transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30):
     return transcripcion_completa.strip()
 
 # Título de la aplicación Streamlit
-st.title("Loope x- 🤖")
+st.title("Vitto x- 🤖")
 
 # Barra lateral para cargar archivo, seleccionar modelo y ajustar parámetros
 with st.sidebar:
@@ -183,26 +185,59 @@ if st.session_state["transcripcion_finalizada"] and  uploaded_audio is not None:
 
 # Si se ha cargado un archivo Excel, procesa y muestra su contenido
 if uploaded_file is not None:
-    df = pd.read_excel(uploaded_file)
-    df = df.astype({col: str for col in df.select_dtypes(include=['object']).columns})
+    # Carga el archivo Excel en un DataFrame
+    dfs = pd.read_excel(uploaded_file)
+    
+    # Convertir columnas de texto a tipo str
+    df = dfs.astype({col: str for col in dfs.select_dtypes(include=['object']).columns})
+    
+    # Muestra el contenido del archivo en la interfaz
     st.write("Contenido del archivo:")
-    st.dataframe(df.head(5))
+    st.dataframe(df.head(3))
 
+    # Convierte columnas de datetime a str si existen
     for col in df.select_dtypes(include=["datetime64[ns]"]).columns:
         df[col] = df[col].astype(str)
     lista_diccionario = df.to_dict(orient="records")
-    lista_diccionario_texto = json.dumps(lista_diccionario, ensure_ascii=False, indent=2)
-    
-    prompt = st.chat_input("Haz una pregunta sobre el archivo...")
+    lista_diccionario_texto = json.dumps(lista_diccionario, ensure_ascii=False, indent=2)    
 
-    if prompt:
+    llm = ChatGroq(model_name=modelo, api_key = api_key)
+    # Inicializa SmartDataframe
+    smart_df = SmartDataframe(dfs, config={'llm': llm})
+    
+    # Solicita preguntas separadas para cada barra de chat
+    #col1, col2 = st.columns(2)
+
+    prompt_pandasai = st.chat_input("Haz una petición para el archivo (PandasAI)...")
+    
+    prompt_dict = st.chat_input("Haz una pregunta sobre el archivo (Diccionario)...")
+
+    if prompt_pandasai:
         st.session_state["chat_history"].append(
-            {"role": "user", "content": prompt},
+            {"role": "user", "content": prompt_pandasai},
         )
         with st.chat_message("user"):
-            st.write(prompt)
+            st.write(prompt_pandasai)
         
-        response_prompt = f"{prompt}\n\nDatos del archivo:\n{lista_diccionario_texto}"
+        # Solicita explícitamente código Python en la respuesta
+        code_prompt = f"Genera el código Python necesario para resolver el siguiente problema:\n\n{prompt_pandasai}"
+        response_pandasai = smart_df.chat(code_prompt)
+        
+        with st.chat_message("assistant"):
+            st.write(response_pandasai)
+        
+        st.session_state["chat_history"].append(
+            {"role": "assistant", "content": response_pandasai},
+        )
+
+    if prompt_dict:
+        st.session_state["chat_history"].append(
+            {"role": "user", "content": prompt_dict},
+        )
+        with st.chat_message("user"):
+            st.write(prompt_dict)
+        
+        response_prompt = f"{prompt_dict}\n\nDatos del archivo:\n{lista_diccionario_texto}"
         response = generate_content(modelo, response_prompt, system_message, max_tokens, temperature)
         
         with st.chat_message("assistant"):

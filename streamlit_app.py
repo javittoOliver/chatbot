@@ -192,8 +192,8 @@ if uploaded_file is not None:
     df = dfs.astype({col: str for col in dfs.select_dtypes(include=['object']).columns})
     
     # Muestra el contenido del archivo en la interfaz
-    st.write("Contenido del archivo:")
-    st.dataframe(df.head(3))
+    st.write("Contenido parcial del archivo:")
+    st.dataframe(df.head(6))
 
     # Convierte columnas de datetime a str si existen
     for col in df.select_dtypes(include=["datetime64[ns]"]).columns:

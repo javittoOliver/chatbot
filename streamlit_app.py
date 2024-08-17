@@ -270,9 +270,14 @@ if uploaded_file is None and uploaded_audio is None:
             {"role": "assistant", "content": streamed_response},
         )
 
-if os.path.exists("exports\charts\temp_chart.png"):
-im = plt.imread("exportaciones\gráficos\temp_chart.png")
-st.image(im)
-os.remove("exports\charts\temp_chart.png")
+# Verificar si el archivo existe
+if os.path.exists("exports/charts/temp_chart.png"):
+    # Cargar la imagen
+    im = plt.imread("exports/charts/temp_chart.png")
+    # Mostrar la imagen en Streamlit
+    st.image(im)
+    # Eliminar el archivo después de mostrarlo
+    os.remove("exports/charts/temp_chart.png")
 else:
-st.write(respuesta)
+    # Mostrar la respuesta si la imagen no existe
+    st.write(respuesta)

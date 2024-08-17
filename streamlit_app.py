@@ -269,3 +269,10 @@ if uploaded_file is None and uploaded_audio is None:
         st.session_state["chat_history"].append(
             {"role": "assistant", "content": streamed_response},
         )
+
+if os.path.exists("exports\charts\temp_chart.png"):
+im = plt.imread("exportaciones\gráficos\temp_chart.png")
+st.image(im)
+os.remove("exports\charts\temp_chart.png")
+else:
+st.write(respuesta)

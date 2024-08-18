@@ -270,12 +270,15 @@ if uploaded_file is None and uploaded_audio is None:
             {"role": "assistant", "content": streamed_response},
         )
 # Verificar si el archivo existe
+
 if os.path.exists("exports/charts/temp_chart.png"):
     st.image("exports/charts/temp_chart.png")
     os.remove("exports/charts/temp_chart.png")
 else:
-    st.write(response)
-
+    if 'response' in locals():
+        st.write(response)
+    else:
+        st.write("No hay respuesta para mostrar.")
 # Verificar si el archivo existe
 #if os.path.exists("exports/charts/temp_chart.png"):
     # Cargar la imagen

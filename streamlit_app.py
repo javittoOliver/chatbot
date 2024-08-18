@@ -213,17 +213,22 @@ if uploaded_file is not None:
         prompt_dict = st.chat_input("Haz una pregunta sobre el archivo (Diccionario)...")
 
         if prompt_pandasai:
+            # Agrega la consulta actual al historial de chat
             st.session_state["chat_history"].append({"role": "user", "content": prompt_pandasai})
             with st.chat_message("user"):
                 st.write(prompt_pandasai)
-
-            # Solicita explícitamente código Python en la respuesta
-            code_prompt = f"Genera el código Python necesario para resolver el siguiente problema, y responde en el mismo idioma que la pregunta:\n\n{prompt_pandasai}"
+        
+            # Combina todo el historial en un solo prompt
+            combined_history = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state["chat_history"]])
+            
+            # Solicita código Python considerando todo el historial
+            code_prompt = f"Considerando la siguiente conversación previa, genera el código Python necesario para resolver el siguiente problema, y responde en el mismo idioma que la pregunta:\n\n{combined_history}"
             response_pandasai = smart_df.chat(code_prompt)
-
+        
             with st.chat_message("assistant"):
                 st.write(response_pandasai)
-
+        
+            # Agrega la respuesta al historial de chat
             st.session_state["chat_history"].append({"role": "assistant", "content": response_pandasai})
             
             # Verificar si el archivo existe
@@ -234,7 +239,7 @@ if uploaded_file is not None:
                 if 'response' in locals():
                     st.write(response)
                 else:
-                    st.write("")            
+                    st.write("")          
 
         if prompt_dict:
             st.session_state["chat_history"].append({"role": "user", "content": prompt_dict})

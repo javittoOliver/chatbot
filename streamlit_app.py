@@ -30,7 +30,7 @@ def get_streaming_response(response):
             yield chunk.choices[0].delta.content
 
 # Función para generar contenido a partir de un modelo Groq
-def generate_content(modelo:str, prompt:str, system_message:str="You are a helpful assistant.", max_tokens:int=1024, temperature:int=0.5):
+def generate_content(modelo:str, prompt:str, system_message:str="Eres un asistente amigable.", max_tokens:int=1024, temperature:int=0.5):
     # Incluye el historial de chat en los mensajes
     messages = [{"role": "system", "content": system_message}]
     messages += st.session_state["chat_history"]

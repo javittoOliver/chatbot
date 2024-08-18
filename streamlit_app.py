@@ -124,12 +124,6 @@ with st.sidebar:
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
     
-    # Agrega el mensaje del sistema al historial sin mostrarlo en pantalla
-    st.session_state["chat_history"].append({
-        "role": "system",
-        "content": "Responde en el idioma de la consulta"
-    })
-
 # Muestra los mensajes del historial de chat
 for message in st.session_state["chat_history"]:
     with st.chat_message(message["role"]):
@@ -217,6 +211,15 @@ if uploaded_file is not None:
         # Solicita preguntas separadas para cada barra de chat
         prompt_pandasai = st.chat_input("Haz una petición para el archivo (PandasAI)...")
         prompt_dict = st.chat_input("Haz una pregunta sobre el archivo (Diccionario)...")
+        # Inicializa el historial de chat si no existe
+        if "chat_history" not in st.session_state:
+            st.session_state["chat_history"] = []
+            
+            # Agrega el mensaje del sistema al historial sin mostrarlo en pantalla
+            st.session_state["chat_history"].append({
+                "role": "system",
+                "content": "Responde en el idioma de la consulta"
+            })
 
         if prompt_pandasai:
             # Agrega la consulta actual al historial de chat

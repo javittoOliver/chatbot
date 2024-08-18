@@ -216,7 +216,6 @@ if uploaded_file is not None:
         if prompt_pandasai:
             # Agrega la consulta actual al historial de chat
             st.session_state["chat_history"].append({"role": "user", "content": prompt_pandasai})
-            st.session_state["chat_history"].append({"role": "system", "content": "Responde en el idioma de la consulta"})
                                                   
             with st.chat_message("user"):
                 st.write(prompt_pandasai)
@@ -228,7 +227,7 @@ if uploaded_file is not None:
             # Prompt final con una instrucción clara sobre el idioma
             code_prompt = (
                 f"Considera la siguiente conversación previa como contexto y responde solo a la consulta actual. "
-                f"Responde en el mismo idioma de la consulta.\n\n"
+                f"Responde en español.\n\n"
                 f"Contexto:\n{combined_history}\n\n"
                 f"Consulta actual:\n{current_question}"
             )

@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import streamlit as st
 import pandas as pd
@@ -9,16 +10,14 @@ from langchain_groq.chat_models import ChatGroq
 import json
 import io
 import soundfile as sf
-import os
-
+import matplotlib.pyplot as plt
 
 # Configura la página de Streamlit para que use todo el ancho disponible
 st.set_page_config(layout="wide")
 
 
 # Establece la clave API para acceder a la API de Groq desde st.secrets
-#api_key = st.secrets["general"]["GROQ_API_KEY"]
-api_key = "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"
+api_key = st.secrets["general"]["GROQ_API_KEY"]
 
 # Inicializa el cliente de Groq usando la clave API
 client = Groq(
@@ -235,7 +234,7 @@ if uploaded_file is not None:
                 if 'response' in locals():
                     st.write(response)
                 else:
-                    st.write("")
+                    st.write("")            
 
         if prompt_dict:
             st.session_state["chat_history"].append({"role": "user", "content": prompt_dict})

@@ -208,14 +208,12 @@ if uploaded_file is not None:
         llm = ChatGroq(model_name=modelo, api_key=api_key)
         smart_df = SmartDataframe(dfs, config={'llm': llm})
         # Inicializa el historial de chat si no existe
-        if "chat_history" not in st.session_state:
-            st.session_state["chat_history"] = []
+
             
-            # Agrega el mensaje del sistema al historial sin mostrarlo en pantalla
-            st.session_state["chat_history"].append({
-                "role": "system",
-                "content": "Responde en el idioma de la consulta"
-            })
+        # Agrega el mensaje del sistema al historial sin mostrarlo en pantalla
+        st.session_state["chat_history"].append({
+            "role": "system",
+            "content": "Responde en el idioma de la consulta"})
 
         # Solicita preguntas separadas para cada barra de chat
         prompt_pandasai = st.chat_input("Haz una petición para el archivo (PandasAI)...")

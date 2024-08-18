@@ -212,19 +212,20 @@ if uploaded_file is not None:
         prompt_pandasai = st.chat_input("Haz una petición para el archivo (PandasAI)...")
         prompt_dict = st.chat_input("Haz una pregunta sobre el archivo (Diccionario)...")
 
-        if prompt_pandasai:
+       if prompt_pandasai:
             # Agrega la consulta actual al historial de chat
             st.session_state["chat_history"].append({"role": "user", "content": prompt_pandasai})
             with st.chat_message("user"):
                 st.write(prompt_pandasai)
         
-            # Construye el prompt con el historial como contexto, pero resalta que debe responder solo a la consulta más reciente
+            # Construye el prompt con el historial como contexto
             combined_history = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state["chat_history"][:-1]])
             current_question = f"{st.session_state['chat_history'][-1]['role']}: {st.session_state['chat_history'][-1]['content']}"
         
-            # Prompt final
+            # Prompt final con una instrucción clara sobre el idioma
             code_prompt = (
-                f"Considera la siguiente conversación previa como contexto, pero responde solo a la consulta actual. "
+                f"Considera la siguiente conversación previa como contexto y responde solo a la consulta actual. "
+                f"Asegúrate de que tu respuesta esté en el mismo idioma que la consulta actual.\n\n"
                 f"Contexto:\n{combined_history}\n\n"
                 f"Consulta actual:\n{current_question}"
             )
@@ -246,6 +247,7 @@ if uploaded_file is not None:
                     st.write(response)
                 else:
                     st.write("")  
+
 
         if prompt_dict:
             st.session_state["chat_history"].append({"role": "user", "content": prompt_dict})

@@ -140,26 +140,20 @@ if "transcripcion" not in st.session_state:
 if uploaded_audio is not None and not st.session_state["transcripcion_finalizada"]:
     st.write("Transcribiendo el audio...")
     
-    try:
-        # Transcribe el audio
-        transcripcion = transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30)
-        
-        # Guardar la transcripción en el estado de sesión para referencia futura
-        st.session_state["transcripcion"] = transcripcion
+    # Transcribe el audio
+    transcripcion = transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30)
+    
+    # Muestra un mensaje de que la transcripción ha finalizado
+    st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")
 
-        # Marcar en el estado de sesión que la transcripción ha terminado
-        st.session_state["transcripcion_finalizada"] = True
+    # Guardar la transcripción en el estado de sesión para referencia futura
+    st.session_state["transcripcion"] = transcripcion
 
-        # Muestra un mensaje de que la transcripción ha finalizado
-        st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")
-        
-    except Exception as e:
-        st.write("Ocurrió un error durante la transcripción. Por favor, inténtalo de nuevo.")
-        # Puedes registrar el error para depuración
-        st.write(f"Detalles del error: {e}")
+    # Marcar en el estado de sesión que la transcripción ha terminado
+    st.session_state["transcripcion_finalizada"] = True
 
 # Mostrar la caja de texto para hacer preguntas solo si la transcripción ha finalizado
-if st.session_state["transcripcion_finalizada"] and uploaded_audio is not None:
+if st.session_state["transcripcion_finalizada"] and  uploaded_audio is not None:
     prompt = st.chat_input("Haz una pregunta sobre la transcripción...")
 
     if prompt:
@@ -176,24 +170,18 @@ if st.session_state["transcripcion_finalizada"] and uploaded_audio is not None:
         else:
             response_prompt = prompt
         
-        try:
-            # Genera la respuesta para la pregunta del usuario
-            response = generate_content(modelo, response_prompt, system_message, max_tokens, temperature)
-            
-            # Muestra la respuesta generada por el asistente en streaming
-            with st.chat_message("assistant"):
-                stream_generator = get_streaming_response(response)
-                streamed_response = st.write_stream(stream_generator)
-            
-            # Añade la respuesta del asistente al historial de chat
-            st.session_state["chat_history"].append(
-                {"role": "assistant", "content": streamed_response},
-            )
+        # Genera la respuesta para la pregunta del usuario
+        response = generate_content(modelo, response_prompt, system_message, max_tokens, temperature)
         
-        except Exception as e:
-            st.write("Ocurrió un error al generar la respuesta. Por favor, inténtalo de nuevo.")
-            # Puedes registrar el error para depuración
-            st.write(f"Detalles del error: {e}")
+        # Muestra la respuesta generada por el asistente en streaming
+        with st.chat_message("assistant"):
+            stream_generator = get_streaming_response(response)
+            streamed_response = st.write_stream(stream_generator)
+        
+        # Añade la respuesta del asistente al historial de chat
+        st.session_state["chat_history"].append(
+            {"role": "assistant", "content": streamed_response},
+        )
 
 # Si se ha cargado un archivo Excel, procesa y muestra su contenido
 if uploaded_file is not None:

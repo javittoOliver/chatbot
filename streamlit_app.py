@@ -212,7 +212,7 @@ if uploaded_file is not None:
         prompt_pandasai = st.chat_input("Haz una petición para el archivo (PandasAI)...")
         prompt_dict = st.chat_input("Haz una pregunta sobre el archivo (Diccionario)...")
 
-       if prompt_pandasai:
+        if prompt_pandasai:
             # Agrega la consulta actual al historial de chat
             st.session_state["chat_history"].append({"role": "user", "content": prompt_pandasai})
             with st.chat_message("user"):

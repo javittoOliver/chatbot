@@ -271,13 +271,13 @@ if uploaded_file is None and uploaded_audio is None:
         )
 
 # Verificar si el archivo existe
-if os.path.exists("exports/charts/temp_chart.png"):
+#if os.path.exists("exports/charts/temp_chart.png"):
     # Cargar la imagen
-    im = plt.imread("exports/charts/temp_chart.png")
+    #im = plt.imread("exports/charts/temp_chart.png")
     # Mostrar la imagen en Streamlit
-    st.image(im)
+    #st.image(im)
     # Eliminar el archivo después de mostrarlo
-    os.remove("exports/charts/temp_chart.png")
-else:
+    #os.remove("exports/charts/temp_chart.png")
+#else:
     # Mostrar la respuesta si la imagen no existe
-    st.write(respuesta)
+    #st.write(respuesta)

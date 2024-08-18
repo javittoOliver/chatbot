@@ -30,7 +30,7 @@ def get_streaming_response(response):
             yield chunk.choices[0].delta.content
 
 # Función para generar contenido a partir de un modelo Groq
-def generate_content(modelo:str, prompt:str, system_message:str="Eres un asistente amigable.", max_tokens:int=1024, temperature:int=0.5):
+def generate_content(modelo:str, prompt:str, system_message:str="You are a helpful assistant.", max_tokens:int=1024, temperature:int=0.5):
     # Incluye el historial de chat en los mensajes
     messages = [{"role": "system", "content": system_message}]
     messages += st.session_state["chat_history"]
@@ -96,7 +96,7 @@ def transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30):
     return transcripcion_completa.strip()
 
 # Título de la aplicación Streamlit
-st.title("Vitto x- 🤖")
+st.title("Loope x- 🤖")
 
 # Barra lateral para cargar archivo, seleccionar modelo y ajustar parámetros
 with st.sidebar:
@@ -120,10 +120,10 @@ with st.sidebar:
     # Selecciona el número máximo de tokens para la respuesta
     max_tokens = st.selectbox("Max New Tokens", [1024, 2048, 4096, 8196])
 
-# Inicializa el historial de chat si no existe
+# Inicializa el historial de chat en el estado de sesión si no existe
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
-    
+
 # Muestra los mensajes del historial de chat
 for message in st.session_state["chat_history"]:
     with st.chat_message(message["role"]):

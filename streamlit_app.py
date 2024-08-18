@@ -96,7 +96,7 @@ def transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30):
     return transcripcion_completa.strip()
 
 # Título de la aplicación Streamlit
-st.title("Loope x- 🤖")
+st.title("Vitto x- 🤖")
 
 # Barra lateral para cargar archivo, seleccionar modelo y ajustar parámetros
 with st.sidebar:

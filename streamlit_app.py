@@ -215,8 +215,9 @@ if uploaded_file is not None:
 
         if prompt_pandasai:
             # Agrega la consulta actual al historial de chat
-            st.session_state["chat_history"].append({"role": "user", "content": prompt_pandasai},
-                                                   {"role": "system","content": "Responde en el idioma de la consulta"})
+            st.session_state["chat_history"].append({"role": "user", "content": prompt_pandasai})
+            st.session_state["chat_history"].append({"role": "system", "content": "Responde en el idioma de la consulta"})
+                                                  
             with st.chat_message("user"):
                 st.write(prompt_pandasai)
         

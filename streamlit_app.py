@@ -138,20 +138,25 @@ if "transcripcion" not in st.session_state:
     st.session_state["transcripcion"] = ""
 
 # Si se ha cargado un archivo de audio, lo transcribe y muestra un mensaje cuando ha terminado
-if uploaded_audio is not None and not st.session_state["transcripcion_finalizada"]:
+if uploaded_audio is not None and not st.session_state.get("transcripcion_finalizada", False):
     st.write("Transcribiendo el audio...")
-    
-    # Transcribe el audio
-    transcripcion = transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30)
-    
-    # Muestra un mensaje de que la transcripción ha finalizado
-    st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")
 
-    # Guardar la transcripción en el estado de sesión para referencia futura
-    st.session_state["transcripcion"] = transcripcion
+    try:
+        # Transcribe el audio
+        transcripcion = transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30)
+        
+        # Muestra un mensaje de que la transcripción ha finalizado
+        st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")
+        
+        # Guardar la transcripción en el estado de sesión para referencia futura
+        st.session_state["transcripcion"] = transcripcion
 
-    # Marcar en el estado de sesión que la transcripción ha terminado
-    st.session_state["transcripcion_finalizada"] = True
+        # Marcar en el estado de sesión que la transcripción ha terminado
+        st.session_state["transcripcion_finalizada"] = True
+
+    except Exception as e:
+        # Muestra un mensaje simple de error en caso de que ocurra algún problema
+        st.error("Ocurrió un error durante la transcripción del archivo. Por favor, intenta de nuevo.")
 
 # Mostrar la caja de texto para hacer preguntas solo si la transcripción ha finalizado
 if st.session_state["transcripcion_finalizada"] and  uploaded_audio is not None:

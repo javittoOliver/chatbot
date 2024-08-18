@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import streamlit as st
 import pandas as pd
@@ -10,21 +9,22 @@ from langchain_groq.chat_models import ChatGroq
 import json
 import io
 import soundfile as sf
-import matplotlib.pyplot as plt
+import os
+
 
 # Configura la página de Streamlit para que use todo el ancho disponible
 st.set_page_config(layout="wide")
 
 
 # Establece la clave API para acceder a la API de Groq desde st.secrets
-api_key = st.secrets["general"]["GROQ_API_KEY"]
+#api_key = st.secrets["general"]["GROQ_API_KEY"]
+api_key = "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"
 
 # Inicializa el cliente de Groq usando la clave API
 client = Groq(
     api_key=api_key,
 )
 
-# Función para obtener respuestas en streaming desde la API
 def get_streaming_response(response):
     for chunk in response:
         if chunk.choices[0].delta.content:
@@ -97,7 +97,7 @@ def transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30):
     return transcripcion_completa.strip()
 
 # Título de la aplicación Streamlit
-st.title("Vitto x- 🤖")
+st.title("Loope x- 🤖")
 
 # Barra lateral para cargar archivo, seleccionar modelo y ajustar parámetros
 with st.sidebar:
@@ -138,25 +138,20 @@ if "transcripcion" not in st.session_state:
     st.session_state["transcripcion"] = ""
 
 # Si se ha cargado un archivo de audio, lo transcribe y muestra un mensaje cuando ha terminado
-if uploaded_audio is not None and not st.session_state.get("transcripcion_finalizada", False):
+if uploaded_audio is not None and not st.session_state["transcripcion_finalizada"]:
     st.write("Transcribiendo el audio...")
+    
+    # Transcribe el audio
+    transcripcion = transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30)
+    
+    # Muestra un mensaje de que la transcripción ha finalizado
+    st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")
 
-    try:
-        # Transcribe el audio
-        transcripcion = transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30)
-        
-        # Muestra un mensaje de que la transcripción ha finalizado
-        st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")
-        
-        # Guardar la transcripción en el estado de sesión para referencia futura
-        st.session_state["transcripcion"] = transcripcion
+    # Guardar la transcripción en el estado de sesión para referencia futura
+    st.session_state["transcripcion"] = transcripcion
 
-        # Marcar en el estado de sesión que la transcripción ha terminado
-        st.session_state["transcripcion_finalizada"] = True
-
-    except Exception as e:
-        # Muestra un mensaje simple de error en caso de que ocurra algún problema
-        st.error("Ocurrió un error durante la transcripción del archivo. Por favor, intenta de nuevo.")
+    # Marcar en el estado de sesión que la transcripción ha terminado
+    st.session_state["transcripcion_finalizada"] = True
 
 # Mostrar la caja de texto para hacer preguntas solo si la transcripción ha finalizado
 if st.session_state["transcripcion_finalizada"] and  uploaded_audio is not None:
@@ -280,24 +275,3 @@ if uploaded_file is None and uploaded_audio is None:
         st.session_state["chat_history"].append(
             {"role": "assistant", "content": streamed_response},
         )
-# Verificar si el archivo existe
-
-if os.path.exists("exports/charts/temp_chart.png"):
-    st.image("exports/charts/temp_chart.png")
-    os.remove("exports/charts/temp_chart.png")
-else:
-    if 'response' in locals():
-        st.write(response)
-    else:
-        st.write("")
-# Verificar si el archivo existe
-#if os.path.exists("exports/charts/temp_chart.png"):
-    # Cargar la imagen
-    #im = plt.imread("exports/charts/temp_chart.png")
-    # Mostrar la imagen en Streamlit
-    #st.image(im)
-    # Eliminar el archivo después de mostrarlo
-    #os.remove("exports/charts/temp_chart.png")
-#else:
-    # Mostrar la respuesta si la imagen no existe
-    #st.write(respuesta)

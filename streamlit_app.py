@@ -278,7 +278,7 @@ else:
     if 'response' in locals():
         st.write(response)
     else:
-        st.write("No hay respuesta para mostrar.")
+        st.write("")
 # Verificar si el archivo existe
 #if os.path.exists("exports/charts/temp_chart.png"):
     # Cargar la imagen

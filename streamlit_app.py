@@ -124,7 +124,7 @@ with st.sidebar:
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
     
-    # Agrega el mensaje del sistema al historial
+    # Agrega el mensaje del sistema al historial sin mostrarlo en pantalla
     st.session_state["chat_history"].append({
         "role": "system",
         "content": "Responde en el idioma de la consulta"

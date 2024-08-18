@@ -120,9 +120,15 @@ with st.sidebar:
     # Selecciona el número máximo de tokens para la respuesta
     max_tokens = st.selectbox("Max New Tokens", [1024, 2048, 4096, 8196])
 
-# Inicializa el historial de chat en el estado de sesión si no existe
+# Inicializa el historial de chat si no existe
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
+    
+    # Agrega el mensaje del sistema al historial
+    st.session_state["chat_history"].append({
+        "role": "system",
+        "content": "Responde en el idioma de la consulta"
+    })
 
 # Muestra los mensajes del historial de chat
 for message in st.session_state["chat_history"]:

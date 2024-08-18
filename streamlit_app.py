@@ -274,7 +274,7 @@ if os.path.exists("exports/charts/temp_chart.png"):
     st.image("exports/charts/temp_chart.png")
     os.remove("exports/charts/temp_chart.png")
 else:
-    st.write(respuesta)
+    st.write(response)
 
 # Verificar si el archivo existe
 #if os.path.exists("exports/charts/temp_chart.png"):

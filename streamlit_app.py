@@ -92,7 +92,8 @@ def transcribir_audio_por_segmentos(uploaded_audio):
     # Aplicar la función a las columnas 'start' y 'end'
     segments['start'] = segments['start'].apply(seconds_to_time)
     segments['end'] = segments['end'].apply(seconds_to_time)
-    return segments
+    conversacion = '\n'.join(f"{row['start']} {row['end']} {row['text']}" for _, row in segments.iterrows())
+    return conversacion
 
 # Título de la aplicación Streamlit
 st.title("Vitto x- 🤖")

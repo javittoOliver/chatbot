@@ -124,26 +124,20 @@ if "transcripcion" not in st.session_state:
 if uploaded_audio is not None and not st.session_state["transcripcion_finalizada"]:
     st.write("Transcribiendo el audio...")
     
-    try:
-        # Intenta transcribir el audio
-        transcripcion = transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30)
+    
+    # Intenta transcribir el audio
+    transcripcion = transcribir_audio_por_segmentos(uploaded_audio, segment_duration=30)
         
-        # Muestra un mensaje de que la transcripción ha finalizado
-        st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")
+    # Muestra un mensaje de que la transcripción ha finalizado
+    st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")
         
-        # Guardar la transcripción en el estado de sesión para referencia futura
-        st.session_state["transcripcion"] = transcripcion
+    # Guardar la transcripción en el estado de sesión para referencia futura
+    st.session_state["transcripcion"] = transcripcion
         
-        # Marcar en el estado de sesión que la transcripción ha terminado
-        st.session_state["transcripcion_finalizada"] = True
+    # Marcar en el estado de sesión que la transcripción ha terminado
+    st.session_state["transcripcion_finalizada"] = True
 
-    except Exception as e:
-        # Manejo de errores específicos, como la duración del audio
-        if "audio is too long" in str(e).lower():
-            st.error("El audio es demasiado extenso para ser procesado. Intenta con un archivo más corto.")
-        else:
-            # Error general
-            st.error("Ocurrió un error al transcribir el audio. Por favor, intenta nuevamente.")
+   
 
 # Mostrar la caja de texto para hacer preguntas solo si la transcripción ha finalizado
 if st.session_state["transcripcion_finalizada"] and uploaded_audio is not None:

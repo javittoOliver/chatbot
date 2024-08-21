@@ -51,8 +51,23 @@ def generate_content(modelo:str, prompt:str, system_message:str="You are a helpf
 # Función para transcribir audio usando Whisper
 
 def transcribir_audio_por_segmentos(uploaded_audio):
+    # Leer el contenido del archivo de audio
+    audio_bytes = uploaded_audio.read()
     
-        # Verificar si la GPU admite FP16
+    # Convertir los bytes del audio a un archivo temporal que soundfile pueda leer
+    audio_file = io.BytesIO(audio_bytes)
+    
+    # Leer el archivo de audio usando soundfile para obtener los datos de audio y la frecuencia de muestreo
+    audio_data, sample_rate = sf.read(audio_file)
+    
+    # Convertir a mono si es estéreo
+    if audio_data.ndim > 1:
+        audio_data = np.mean(audio_data, axis=1)
+    
+    # Convertir los datos de audio a float32
+    audio_data = audio_data.astype(np.float32)
+    
+    # Verificar si la GPU admite FP16 
     if torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 7:
         fp16_available = True
     else:
@@ -61,13 +76,13 @@ def transcribir_audio_por_segmentos(uploaded_audio):
     model = whisper.load_model("small")
 
     if fp16_available:
-        result = model.transcribe(audio_path)
+        result = model.transcribe(audio_data)
     else:
-        result = model.transcribe(audio_path, fp16=False)   
+        result = model.transcribe(audio_data, fp16=False)   
     
     #model = whisper.load_model("base")
     print("Whisper model loaded.")
-    result = model.transcribe(uploaded_audio)
+    result = model.transcribe(audio_data)
     result = pd.DataFrame(transcripcion['segments'])[['start', 'end','text']]
     
     # Función para convertir segundos a hh:mm:ss

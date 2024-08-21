@@ -83,16 +83,16 @@ def transcribir_audio_por_segmentos(uploaded_audio):
     #model = whisper.load_model("base")
     print("Whisper model loaded.")
     result = model.transcribe(audio_data)
-    result = pd.DataFrame(transcripcion['segments'])[['start', 'end','text']]
+    segments = pd.DataFrame(result['segments'])[['start', 'end','text']]
     
     # Función para convertir segundos a hh:mm:ss
     def seconds_to_time(seconds):
         return str(datetime.timedelta(seconds=seconds))
 
     # Aplicar la función a las columnas 'start' y 'end'
-    result['start'] = result['start'].apply(seconds_to_time)
-    result['end'] = result['end'].apply(seconds_to_time)
-    return result
+    segments['start'] = segments['start'].apply(seconds_to_time)
+    segments['end'] = segments['end'].apply(seconds_to_time)
+    return segments
 
 # Título de la aplicación Streamlit
 st.title("Vitto x- 🤖")

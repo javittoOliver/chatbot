@@ -109,7 +109,7 @@ with st.sidebar:
     uploaded_audio = st.file_uploader("Sube un archivo de audio", type=["mp3", "wav", "ogg", "flac"])
 
     # Permite al usuario seleccionar el modelo a utilizar
-    modelo = st.selectbox("Modelo", ["llama3-70b-8192", "llama3-8b-8192", "mixtral-8x7b-32768", "gemma2-9b-it"])
+    modelo = st.selectbox("Modelo", ["llama-3.1-70b-versatile", "llama3-70b-8192", "mixtral-8x7b-32768", "gemma2-9b-it"])
 
     # Permite al usuario ingresar un mensaje de sistema
     system_message = st.text_input("System Message", placeholder="Default : Eres un asistente amigable.")
@@ -140,20 +140,33 @@ if "transcripcion" not in st.session_state:
 if uploaded_audio is not None and not st.session_state["transcripcion_finalizada"]:
     st.write("Transcribiendo el audio...")
     
-    
-    # Intenta transcribir el audio
-    transcripcion = transcribir_audio_por_segmentos(uploaded_audio)
+    try:
+        # Intenta transcribir el audio
+        transcripcion = transcribir_audio_por_segmentos(uploaded_audio)
         
-    # Muestra un mensaje de que la transcripción ha finalizado
-    st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")
+        # Muestra un mensaje de que la transcripción ha finalizado
+        st.write("La transcripción ha finalizado. Puedes hacer preguntas sobre el contenido.")
         
-    # Guardar la transcripción en el estado de sesión para referencia futura
-    st.session_state["transcripcion"] = transcripcion
+        # Guardar la transcripción en el estado de sesión para referencia futura
+        st.session_state["transcripcion"] = transcripcion
         
-    # Marcar en el estado de sesión que la transcripción ha terminado
-    st.session_state["transcripcion_finalizada"] = True
+        # Marcar en el estado de sesión que la transcripción ha terminado
+        st.session_state["transcripcion_finalizada"] = True
 
-   
+        st.download_button(
+        label="Descargar transcripción",
+        data=transcripcion,
+        file_name="transcripcion.txt",
+        mime="text/plain"
+    )
+
+    except Exception as e:
+        # Manejo de errores específicos, como la duración del audio
+        if "audio is too long" in str(e).lower():
+            st.error("El audio es demasiado extenso para ser procesado. Intenta con un archivo más corto.")
+        else:
+            # Error general
+            st.error("Ocurrió un error al transcribir el audio. Por favor, intenta nuevamente.")
 
 # Mostrar la caja de texto para hacer preguntas solo si la transcripción ha finalizado
 if st.session_state["transcripcion_finalizada"] and uploaded_audio is not None:

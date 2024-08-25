@@ -98,7 +98,7 @@ def transcribir_audio_por_segmentos(uploaded_audio):
 # Título de la aplicación Streamlit
 st.title("Vitto x- 🤖")
 # Agregar un enlace usando Markdown
-st.markdown("[Haz clic aquí para usar mi Generador de Presentaciones](https://presentaciones-vitto.streamlit.app/)")
+st.markdown('<a href="" target="_blank">Haz chttps://presentaciones-vitto.streamlit.app/lic aquí para usar mi Generador de presentaciones</a>', unsafe_allow_html=True)
 
 # Barra lateral para cargar archivo, seleccionar modelo y ajustar parámetros
 with st.sidebar:

@@ -119,7 +119,7 @@ with st.sidebar:
     temperature = st.slider("Temperatura", 0.0, 1.0, 0.5, 0.2)
     
     # Selecciona el número máximo de tokens para la respuesta
-    max_tokens = st.selectbox("Max New Tokens", [1024, 2048, 4096, 8196])
+    max_tokens = st.selectbox("Tokens de salida", [2048, 1024, 4096, 8196])
 
 # Inicializa el historial de chat en el estado de sesión si no existe
 if "chat_history" not in st.session_state:

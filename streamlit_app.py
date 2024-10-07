@@ -108,7 +108,7 @@ with st.sidebar:
     st.write("Estás usando  **Streamlit💻** and **Groq🖥**\n from Vitto ✳️")
     
     # Permite al usuario subir un archivo Excel
-    uploaded_file = st.file_uploader("Sube un archivo Excel", type=["xlsx", "xls"])
+    uploaded_file = st.file_uploader("Sube un archivo Excel", type=["csv", "xlsx", "xls"])
 
     # Permite al usuario subir un archivo de audio
     uploaded_audio = st.file_uploader("Sube un archivo de audio", type=["mp3", "wav", "ogg", "flac"])
@@ -209,7 +209,11 @@ if st.session_state["transcripcion_finalizada"] and uploaded_audio is not None:
 if uploaded_file is not None:
     try:
         # Carga el archivo Excel en un DataFrame
-        dfs = pd.read_excel(uploaded_file)
+        # Determina el tipo de archivo según la extensión y carga en el DataFrame
+        if uploaded_file.name.endswith('.csv'):
+            dfs = pd.read_csv(uploaded_file)  # Cargar CSV
+        else:
+            dfs = pd.read_excel(uploaded_file)  # Cargar Excel
         
         # Convertir columnas de texto a tipo str
         df = dfs.astype({col: str for col in dfs.select_dtypes(include=['object']).columns})

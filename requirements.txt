@@ -11,4 +11,4 @@ torch
 pandasai
 langchain-groq
 matplotlib
-install scikit-learn
+scikit-learn

@@ -265,11 +265,13 @@ if uploaded_file is not None:
         
             # Agrega la respuesta al historial de chat
             st.session_state["chat_history"].append({"role": "assistant", "content": response_pandasai})
-            
+
+            import uuid
             # Verificar si el archivo existe
+            chart_filename = f"exports/charts/chart_{uuid.uuid4()}.png"
             if os.path.exists("exports/charts/temp_chart.png"):
                 st.image("exports/charts/temp_chart.png")
-                os.remove("exports/charts/temp_chart.png")
+                os.rename("exports/charts/temp_chart.png", chart_filename)
             else:
                 if 'response' in locals():
                     st.write(response)

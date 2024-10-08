@@ -267,14 +267,14 @@ if uploaded_file is not None:
             st.session_state["chat_history"].append({"role": "assistant", "content": response_pandasai})
             
             # Verificar si el archivo existe
-            #if os.path.exists("exports/charts/temp_chart.png"):
-                #st.image("exports/charts/temp_chart.png")
-                #os.remove("exports/charts/temp_chart.png")
-            #else:
-                #if 'response' in locals():
-                    #st.write(response)
-                #else:
-                    #st.write("")  
+            if os.path.exists("exports/charts/temp_chart.png"):
+                st.image("exports/charts/temp_chart.png")
+                os.remove("exports/charts/temp_chart.png")
+            else:
+                if 'response' in locals():
+                    st.write(response)
+                else:
+                    st.write("")  
 
         if prompt_dict:
             st.session_state["chat_history"].append({"role": "user", "content": prompt_dict})

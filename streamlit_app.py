@@ -285,10 +285,13 @@ if uploaded_file is not None:
                 st.image("exports/charts/temp_chart.png")
                 os.rename("exports/charts/temp_chart.png", chart_filename)
 
+            # Almacenar el nombre del archivo en el estado de la sesión
+            st.session_state["chart_history"].append(chart_filename)
+
             # Mostrar el contenido de la respuesta si existe
             
             if 'response' in locals():
-                st.write(response)
+                st.write(chart_filename)
             else:
                 st.write("")
                 

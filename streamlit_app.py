@@ -267,6 +267,9 @@ if uploaded_file is not None:
             st.session_state["chat_history"].append({"role": "assistant", "content": response_pandasai})
 
             import uuid
+            if 'chart_files' not in st.session_state:
+                st.session_state.chart_files = []
+
             # Verificar si el archivo existe
             chart_filename = f"exports/charts/chart_{uuid.uuid4()}.png"
             if os.path.exists("exports/charts/temp_chart.png"):

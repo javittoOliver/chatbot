@@ -276,11 +276,6 @@ if uploaded_file is not None:
                 st.image("exports/charts/temp_chart.png")
                 os.rename("exports/charts/temp_chart.png", chart_filename)
 
-            # Mostrar todas las imágenes guardadas en la lista
-            for chart_file in st.session_state.chart_files:
-                if os.path.exists(chart_file):
-                    st.image(chart_file)
-
             # Mostrar el contenido de la respuesta si existe
             
             if 'response' in locals():
@@ -288,6 +283,11 @@ if uploaded_file is not None:
             else:
                 st.write("")  
 
+        # Mostrar todas las imágenes guardadas en la lista
+        for chart_file in st.session_state.chart_files:
+            if os.path.exists(chart_file):
+                st.image(chart_file)
+                
         if prompt_dict:
             st.session_state["chat_history"].append({"role": "user", "content": prompt_dict})
             with st.chat_message("user"):

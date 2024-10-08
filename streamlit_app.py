@@ -129,10 +129,19 @@ with st.sidebar:
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
 
+if "chart_history" not in st.session_state:
+    st.session_state["chart_history"] = []
+
 # Muestra los mensajes del historial de chat
 for message in st.session_state["chat_history"]:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+
+# Muestra el historial de gráficos generados
+if st.session_state["chart_history"]:
+    st.write("Historial de gráficos generados:")
+    for chart_file in st.session_state["chart_history"]:
+        st.image(chart_file)  # Mostrar cada imagen guardada en el historial
 
 
 # Inicializa el estado de sesión si no existe

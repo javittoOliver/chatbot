@@ -281,12 +281,7 @@ if uploaded_file is not None:
             if 'response' in locals():
                 st.write(response)
             else:
-                st.write("")  
-
-        # Mostrar todas las imágenes guardadas en la lista
-        for chart_file in st.session_state.chart_files:
-            if os.path.exists(chart_file):
-                st.image(chart_file)
+                st.write("")
                 
         if prompt_dict:
             st.session_state["chat_history"].append({"role": "user", "content": prompt_dict})

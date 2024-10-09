@@ -12,6 +12,8 @@ import io
 import soundfile as sf
 import matplotlib.pyplot as plt
 import datetime
+import seaborn as sns
+import uuid
 
 # Configura la página de Streamlit para que use todo el ancho disponible
 st.set_page_config(layout="wide")
@@ -275,7 +277,7 @@ if uploaded_file is not None:
             # Agrega la respuesta al historial de chat
             st.session_state["chat_history"].append({"role": "assistant", "content": response_pandasai})
 
-            import uuid
+            
             if 'chart_files' not in st.session_state:
                 st.session_state.chart_files = []
 

@@ -12,3 +12,4 @@ pandasai
 langchain-groq
 matplotlib
 scikit-learn
+seaborn

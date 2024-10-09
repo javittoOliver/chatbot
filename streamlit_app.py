@@ -10,10 +10,11 @@ from langchain_groq.chat_models import ChatGroq
 import json
 import io
 import soundfile as sf
+import seaborn as sns
 import matplotlib.pyplot as plt
 import datetime
-import seaborn as sns
 import uuid
+
 
 # Configura la página de Streamlit para que use todo el ancho disponible
 st.set_page_config(layout="wide")
@@ -99,10 +100,9 @@ def transcribir_audio_por_segmentos(uploaded_audio):
 
 # Título de la aplicación Streamlit
 st.title("Vitto x- 🤖")
-# Agregar un enlace usando Markdown
 st.markdown('''
 <a href="https://presentaciones-vitto.streamlit.app/" target="_blank" style="text-decoration:none; font-weight:bold;">
-👉 Click aquí para usar mi Generador de presentaciones
+👉 Generador de presentaciones
 </a>
 ''', unsafe_allow_html=True)
 # Barra lateral para cargar archivo, seleccionar modelo y ajustar parámetros
@@ -125,7 +125,7 @@ with st.sidebar:
     temperature = st.slider("Temperatura", 0.0, 1.0, 0.5, 0.2)
     
     # Selecciona el número máximo de tokens para la respuesta
-    max_tokens = st.selectbox("Tokens de salida", [2048, 1024, 4096, 8196])
+    max_tokens = st.selectbox("Max New Tokens", [1024, 2048, 4096, 8196])
 
 # Inicializa el historial de chat en el estado de sesión si no existe
 if "chat_history" not in st.session_state:
@@ -139,11 +139,16 @@ for message in st.session_state["chat_history"]:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# Mostrar gráficas almacenadas en el historial al recargar la página
+if 'chart_files' in st.session_state:
+    for chart_file in st.session_state["chart_files"]:
+        st.image(chart_file)
+
 # Muestra el historial de gráficos generados
-if st.session_state["chart_history"]:
-    st.write("Historial de gráficos generados:")
-    for chart_file in st.session_state["chart_history"]:
-        st.image(chart_file)  # Mostrar cada imagen guardada en el historial
+#if st.session_state["chart_history"]:
+    #st.write("Historial de gráficos generados:")
+    #for chart_file in st.session_state["chart_history"]:
+        #st.image(chart_file)  # Mostrar cada imagen guardada en el historial
 
 
 # Inicializa el estado de sesión si no existe
@@ -151,6 +156,7 @@ if "transcripcion_finalizada" not in st.session_state:
     st.session_state["transcripcion_finalizada"] = False
 if "transcripcion" not in st.session_state:
     st.session_state["transcripcion"] = ""
+
 
 # Si se ha cargado un archivo de audio, lo transcribe y muestra un mensaje cuando ha terminado
 if uploaded_audio is not None and not st.session_state["transcripcion_finalizada"]:
@@ -215,6 +221,7 @@ if st.session_state["transcripcion_finalizada"] and uploaded_audio is not None:
         
         except Exception as e:
             st.error("Ocurrió un error al generar la respuesta. Por favor, intenta nuevamente.")
+
 
 # Si se ha cargado un archivo Excel o CSV, procesa y muestra su contenido
 if uploaded_file is not None:
@@ -304,7 +311,7 @@ if uploaded_file is not None:
     except Exception as e:
         # Mostrar un mensaje de error con más detalles
         st.error(f"Ocurrió un error al procesar el archivo: {e}")
-        
+
 # Si no se ha cargado un archivo, permite hacer preguntas generales
 if uploaded_file is None and uploaded_audio is None:
     prompt = st.chat_input("Haz una pregunta general...")
@@ -321,6 +328,10 @@ if uploaded_file is None and uploaded_audio is None:
         with st.chat_message("assistant"):
             stream_generator = get_streaming_response(response)
             streamed_response = st.write_stream(stream_generator)
+        
+        st.session_state["chat_history"].append(
+            {"role": "assistant", "content": streamed_response},
+        )
         
         st.session_state["chat_history"].append(
             {"role": "assistant", "content": streamed_response},

@@ -13,3 +13,6 @@ langchain-groq
 matplotlib
 scikit-learn
 seaborn
+textblob
+googletrans
+deep-translator

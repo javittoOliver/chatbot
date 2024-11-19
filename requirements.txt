@@ -17,3 +17,5 @@ textblob
 googletrans
 deep-translator
 nltk
+openpyxl
+xlsxwriter

@@ -384,8 +384,8 @@ if uploaded_files:
             if omitted_columns:
                 st.warning(f"Se omitieron las siguientes columnas debido a falta de coincidencia: {', '.join(omitted_columns)}")
             
-            st.write("Archivo Unificado:")
-            st.dataframe(unified_df)
+            st.write("Archivo Unificado (Primeras 5 filas):")
+            st.dataframe(unified_df.head(5))
 
             # Descargar archivo unificado
             st.download_button(

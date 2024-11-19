@@ -133,7 +133,7 @@ def unificar_archivos(files):
 
 # Función para convertir un DataFrame a bytes para descargar
 def convertir_a_excel(df):
-    output = BytesIO()
+    output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False, sheet_name='Unificado')
     return output.getvalue()

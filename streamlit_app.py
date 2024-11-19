@@ -167,7 +167,7 @@ with st.sidebar:
     uploaded_file = st.file_uploader("Sube un archivo Excel", type=["csv", "xlsx", "xls"])
     
     # Permite subir múltiples archivos
-    uploaded_files = st.file_uploader( "Unificador > Sube uno o más archivos Excel o CSV", type=["csv", "xlsx", "xls"], accept_multiple_files=True)
+    uploaded_files = st.file_uploader( "**Unificador** > Sube uno o más archivos Excel o CSV", type=["csv", "xlsx", "xls"], accept_multiple_files=True)
 
     # Permite al usuario subir un archivo de audio
     uploaded_audio = st.file_uploader("Sube un archivo de audio", type=["mp3", "wav", "ogg", "flac"])

@@ -110,7 +110,10 @@ def unificar_archivos(files):
     for file in files:
         # Cargar archivo según su tipo
         if file.name.endswith('.csv'):
-            df = pd.read_csv(file)
+            try:
+                df = pd.read_csv(file, encoding='utf-8')  # Intentar con UTF-8
+            except UnicodeDecodeError:
+                df = pd.read_csv(file, encoding='latin1')  # Usar latin1 si UTF-8 falla
         else:
             df = pd.read_excel(file)
 
@@ -138,6 +141,7 @@ def unificar_archivos(files):
     unified_df = pd.concat(unified_dfs, ignore_index=True)
 
     return unified_df, omitted_columns
+
 
 
 # Función para convertir un DataFrame a bytes para descargar

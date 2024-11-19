@@ -104,6 +104,7 @@ def transcribir_audio_por_segmentos(uploaded_audio):
 def unificar_archivos(files):
     dfs = []
     headers_reference = None
+    common_headers = None
     omitted_columns = set()
 
     for file in files:
@@ -113,21 +114,26 @@ def unificar_archivos(files):
         else:
             df = pd.read_excel(file)
 
-        if headers_reference is None:
-            # Definir los encabezados de referencia
-            headers_reference = set(df.columns)
+        # Actualizar encabezados comunes
+        current_headers = set(df.columns)
+        if common_headers is None:
+            common_headers = current_headers
         else:
-            # Comparar encabezados
-            current_headers = set(df.columns)
-            omitted_columns.update(headers_reference.symmetric_difference(current_headers))
-            # Mantener solo las columnas coincidentes
-            common_columns = headers_reference.intersection(current_headers)
-            df = df[list(common_columns)]
+            # Mantener solo los encabezados que coincidan en todos los archivos
+            common_headers &= current_headers
 
         dfs.append(df)
 
+    # Identificar columnas omitidas (las que no están en todos los archivos)
+    if headers_reference is None:
+        headers_reference = common_headers
+    omitted_columns = set.union(*[set(df.columns) for df in dfs]) - common_headers
+
+    # Filtrar cada DataFrame con las columnas comunes
+    unified_dfs = [df[list(common_headers)] for df in dfs]
+
     # Concatenar todos los DataFrames
-    unified_df = pd.concat(dfs, ignore_index=True)
+    unified_df = pd.concat(unified_dfs, ignore_index=True)
 
     return unified_df, omitted_columns
 
@@ -357,41 +363,32 @@ if uploaded_file is not None:
         st.error(f"Ocurrió un error al procesar el archivo: {e}")
 
 # Si se han cargado archivos Excel o CSV, une
-def unificar_archivos(files):
-    dfs = []
-    headers_reference = None
-    common_headers = None
-    omitted_columns = set()
+if uploaded_files:
+    st.write("Archivos cargados:")
+    for file in uploaded_files:
+        st.write(f"- {file.name}")
 
-    for file in files:
-        # Cargar archivo según su tipo
-        if file.name.endswith('.csv'):
-            df = pd.read_csv(file)
-        else:
-            df = pd.read_excel(file)
+    # Unificar archivos
+    if st.button("Unificar Archivos"):
+        try:
+            unified_df, omitted_columns = unificar_archivos(uploaded_files)
 
-        # Actualizar encabezados comunes
-        current_headers = set(df.columns)
-        if common_headers is None:
-            common_headers = current_headers
-        else:
-            # Mantener solo los encabezados que coincidan en todos los archivos
-            common_headers &= current_headers
+            # Mostrar notificaciones sobre encabezados omitidos
+            if omitted_columns:
+                st.warning(f"Se omitieron las siguientes columnas debido a falta de coincidencia: {', '.join(omitted_columns)}")
+            
+            st.write("Archivo Unificado:")
+            st.dataframe(unified_df)
 
-        dfs.append(df)
-
-    # Identificar columnas omitidas (las que no están en todos los archivos)
-    if headers_reference is None:
-        headers_reference = common_headers
-    omitted_columns = set.union(*[set(df.columns) for df in dfs]) - common_headers
-
-    # Filtrar cada DataFrame con las columnas comunes
-    unified_dfs = [df[list(common_headers)] for df in dfs]
-
-    # Concatenar todos los DataFrames
-    unified_df = pd.concat(unified_dfs, ignore_index=True)
-
-    return unified_df, omitted_columns
+            # Descargar archivo unificado
+            st.download_button(
+                label="Descargar Archivo Unificado",
+                data=convertir_a_excel(unified_df),
+                file_name="archivo_unificado.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        except Exception as e:
+            st.error(f"Error al procesar los archivos: {str(e)}")
 
 # Si no se ha cargado un archivo, permite hacer preguntas generales
 if uploaded_file is None and uploaded_audio is None:

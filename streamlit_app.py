@@ -100,6 +100,45 @@ def transcribir_audio_por_segmentos(uploaded_audio):
     conversacion = '\n'.join(f"{row['start']} {row['end']} {row['text']}" for _, row in segments.iterrows())
     return conversacion
 
+# Función para unificar los archivos
+def unificar_archivos(files):
+    dfs = []
+    headers_reference = None
+    omitted_columns = set()
+
+    for file in files:
+        # Cargar archivo según su tipo
+        if file.name.endswith('.csv'):
+            df = pd.read_csv(file)
+        else:
+            df = pd.read_excel(file)
+
+        if headers_reference is None:
+            # Definir los encabezados de referencia
+            headers_reference = set(df.columns)
+        else:
+            # Comparar encabezados
+            current_headers = set(df.columns)
+            omitted_columns.update(headers_reference.symmetric_difference(current_headers))
+            # Mantener solo las columnas coincidentes
+            common_columns = headers_reference.intersection(current_headers)
+            df = df[list(common_columns)]
+
+        dfs.append(df)
+
+    # Concatenar todos los DataFrames
+    unified_df = pd.concat(dfs, ignore_index=True)
+
+    return unified_df, omitted_columns
+
+# Función para convertir un DataFrame a bytes para descargar
+def convertir_a_excel(df):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Unificado')
+    return output.getvalue()
+
+
 # Título de la aplicación Streamlit
 st.title("Vitto x- 🤖")
 st.markdown('''
@@ -113,6 +152,9 @@ with st.sidebar:
     
     # Permite al usuario subir un archivo Excel
     uploaded_file = st.file_uploader("Sube un archivo Excel", type=["csv", "xlsx", "xls"])
+    
+    # Permite subir múltiples archivos
+    uploaded_files = st.file_uploader( "Sube uno o más archivos Excel o CSV", type=["csv", "xlsx", "xls"], accept_multiple_files=True)
 
     # Permite al usuario subir un archivo de audio
     uploaded_audio = st.file_uploader("Sube un archivo de audio", type=["mp3", "wav", "ogg", "flac"])
@@ -313,6 +355,33 @@ if uploaded_file is not None:
     except Exception as e:
         # Mostrar un mensaje de error con más detalles
         st.error(f"Ocurrió un error al procesar el archivo: {e}")
+
+if uploaded_files:
+    st.write("Archivos cargados:")
+    for file in uploaded_files:
+        st.write(f"- {file.name}")
+
+    # Unificar archivos
+    if st.button("Unificar Archivos"):
+        try:
+            unified_df, omitted_columns = unificar_archivos(uploaded_files)
+
+            # Mostrar notificaciones sobre encabezados omitidos
+            if omitted_columns:
+                st.warning(f"Se omitieron las siguientes columnas debido a falta de coincidencia: {', '.join(omitted_columns)}")
+            
+            st.write("Archivo Unificado:")
+            st.dataframe(unified_df)
+
+            # Descargar archivo unificado
+            st.download_button(
+                label="Descargar Archivo Unificado",
+                data=convertir_a_excel(unified_df),
+                file_name="archivo_unificado.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        except Exception as e:
+            st.error(f"Error al procesar los archivos: {str(e)}")
 
 # Si no se ha cargado un archivo, permite hacer preguntas generales
 if uploaded_file is None and uploaded_audio is None:

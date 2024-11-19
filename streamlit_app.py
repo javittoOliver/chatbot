@@ -103,8 +103,8 @@ def transcribir_audio_por_segmentos(uploaded_audio):
 # Función para unificar los archivos
 def unificar_archivos(files):
     dfs = []
-    headers_reference = None
     common_headers = None
+    headers_reference = None
     omitted_columns = set()
 
     for file in files:
@@ -114,28 +114,31 @@ def unificar_archivos(files):
         else:
             df = pd.read_excel(file)
 
-        # Actualizar encabezados comunes
         current_headers = set(df.columns)
+
+        # Inicializar encabezados comunes
         if common_headers is None:
             common_headers = current_headers
+            headers_reference = df.columns
         else:
-            # Mantener solo los encabezados que coincidan en todos los archivos
             common_headers &= current_headers
 
         dfs.append(df)
 
-    # Identificar columnas omitidas (las que no están en todos los archivos)
-    if headers_reference is None:
-        headers_reference = common_headers
+    # Identificar columnas omitidas
     omitted_columns = set.union(*[set(df.columns) for df in dfs]) - common_headers
 
-    # Filtrar cada DataFrame con las columnas comunes
-    unified_dfs = [df[list(common_headers)] for df in dfs]
+    # Ordenar las columnas según el archivo que tiene todas las columnas
+    ordered_common_headers = [col for col in headers_reference if col in common_headers]
+
+    # Filtrar y ordenar cada DataFrame con las columnas comunes
+    unified_dfs = [df[ordered_common_headers] for df in dfs]
 
     # Concatenar todos los DataFrames
     unified_df = pd.concat(unified_dfs, ignore_index=True)
 
     return unified_df, omitted_columns
+
 
 # Función para convertir un DataFrame a bytes para descargar
 def convertir_a_excel(df):
